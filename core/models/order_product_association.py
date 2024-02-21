@@ -7,7 +7,7 @@ from .base import Base
 
 if TYPE_CHECKING:
     from .product import Product
-    from .product import Order
+    from .order import Order
 
 
 class OrderProductAssociation(Base):
