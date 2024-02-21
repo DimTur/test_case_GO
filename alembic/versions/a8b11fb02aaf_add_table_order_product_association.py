@@ -1,8 +1,8 @@
 """add table order product association
 
-Revision ID: 80d5dfd34dc6
+Revision ID: a8b11fb02aaf
 Revises: 9ec220b6f534
-Create Date: 2024-02-21 13:08:07.687956
+Create Date: 2024-02-21 14:19:47.107401
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "80d5dfd34dc6"
+revision: str = "a8b11fb02aaf"
 down_revision: Union[str, None] = "9ec220b6f534"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,8 +24,9 @@ def upgrade() -> None:
     op.create_table(
         "order_product_association",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("product_id", sa.Integer(), nullable=False),
         sa.Column("order_id", sa.Integer(), nullable=False),
+        sa.Column("product_id", sa.Integer(), nullable=False),
+        sa.Column("count", sa.Integer(), server_default="1", nullable=False),
         sa.ForeignKeyConstraint(
             ["order_id"],
             ["orders.id"],
