@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Settings(BaseSettings):
+class DbSettings(BaseSettings):
     DB_HOST: str
     DB_PORT: int
     DB_NAME: str
@@ -16,7 +16,14 @@ class Settings(BaseSettings):
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     model_config = SettingsConfigDict(env_file=".env")
-    echo: bool = True   # True for debagging
+    echo: bool = True  # True for debagging
+
+
+class Settings(BaseSettings):
+
+    db: DbSettings = DbSettings()
 
 
 settings = Settings()
+# db_url = settings.db.url()
+# print(db_url)
