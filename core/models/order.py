@@ -10,7 +10,7 @@ from sqlalchemy.orm import (
 from .base import Base
 
 if TYPE_CHECKING:
-    from .product import Product
+    from .order_product_association import OrderProductAssociation
 
 
 class Order(Base):
@@ -18,7 +18,6 @@ class Order(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(32), unique=True)
-    products: Mapped[list["Product"]] = relationship(
-        secondary="order_product_association",
-        back_populates="orders",
+    products_details: Mapped[list["OrderProductAssociation"]] = relationship(
+        back_populates="order"
     )
