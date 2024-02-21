@@ -8,4 +8,4 @@ class Rack(Base):
     __tablename__ = "racks"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(32), unique=True)
+    title: Mapped[str] = mapped_column(String(32))
