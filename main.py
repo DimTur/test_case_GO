@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from core.models import Order, Product, OrderProductAssociation
+from core.models import Order, Product, OrderProductAssociation, ProductRackAssociation
 from core.models.db_helper import db_helper
 
 
@@ -79,13 +79,15 @@ async def get_orders_with_products_assoc(session: AsyncSession) -> list[Order]:
     stmt = (
         select(Order)
         .options(
-            selectinload(Order.products_details).joinedload(
-                OrderProductAssociation.product
-            ),
+            selectinload(Order.products_details)
+            .joinedload(OrderProductAssociation.product)  # new
+            .joinedload(Product.racks_products_details)  # new
+            .joinedload(ProductRackAssociation.rack),  # new
         )
         .order_by(Order.id)
     )
-    orders = await session.scalars(stmt)
+    result = await session.execute(stmt)
+    orders = result.scalars().fetchall()
 
     return list(orders)
 
@@ -98,12 +100,18 @@ async def demo_get_orders_with_products_with_assoc(session: AsyncSession):
         for (
             order_product_detail
         ) in order.products_details:  # type: OrderProductAssociation
+            racks_titles = [
+                rack_assoc.rack.title
+                for rack_assoc in order_product_detail.product.racks_products_details
+            ]
             print(
                 "-",
                 order_product_detail.product.id,
                 order_product_detail.product.title,
                 "qty:",
                 order_product_detail.count,
+                "racks:",
+                racks_titles,
             )
 
 
