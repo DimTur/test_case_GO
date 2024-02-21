@@ -120,3 +120,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db_test_case_go

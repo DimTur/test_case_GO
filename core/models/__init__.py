@@ -5,6 +5,7 @@ __all__ = (
     "Order",
     "Assembly",
     "OrderProductAssociation",
+    "ProductRackAssociation",
 )
 
 from .base import Base
@@ -13,3 +14,4 @@ from .rack import Rack
 from .order import Order
 from .assembly import Assembly
 from .order_product_association import OrderProductAssociation
+from .product_rack_association import ProductRackAssociation

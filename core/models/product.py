@@ -11,6 +11,7 @@ from .base import Base
 
 if TYPE_CHECKING:
     from .order_product_association import OrderProductAssociation
+    from .product_rack_association import ProductRackAssociation
 
 
 class Product(Base):
@@ -19,5 +20,8 @@ class Product(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(32), unique=True)
     orders_details: Mapped[list["OrderProductAssociation"]] = relationship(
+        back_populates="product"
+    )
+    racks_products_details: Mapped[list["ProductRackAssociation"]] = relationship(
         back_populates="product"
     )
