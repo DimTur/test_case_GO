@@ -52,8 +52,8 @@ async def create_product(session: AsyncSession, title: str) -> Product:
 #     order_2.products.append(watch)
 #
 #     await session.commit()
-
-
+#
+#
 # async def get_orders_with_products(session: AsyncSession) -> list[Order]:
 #     stmt = (
 #         select(Order)
@@ -65,54 +65,80 @@ async def create_product(session: AsyncSession, title: str) -> Product:
 #     orders = await session.scalars(stmt)
 #
 #     return list(orders)
-
-
+#
+#
 # async def demo_get_orders_with_products_through_secondary(session: AsyncSession):
 #     orders = await get_orders_with_products(session)
 #     for order in orders:
 #         print(order.id, order.title, "products:")
 #         for product in order.products:  # type: Product
 #             print("-", product.id, product.title)
+#
+#
+# async def get_orders_with_products_assoc(session: AsyncSession) -> list[Order]:
+#     stmt = (
+#         select(Order)
+#         .options(
+#             selectinload(Order.products_details)
+#             .joinedload(OrderProductAssociation.product)  # new
+#             .joinedload(Product.racks_products_details)  # new
+#             .joinedload(ProductRackAssociation.rack),  # new
+#         )
+#         .order_by(Order.id)
+#     )
+#     result = await session.execute(stmt)
+#     orders = result.scalars().fetchall()
+#
+#     return list(orders)
 
 
-async def get_orders_with_products_assoc(session: AsyncSession) -> list[Order]:
+async def get_orders_with_products_assoc(
+    session: AsyncSession, order_ids: list[int]
+) -> list[Order]:
     stmt = (
         select(Order)
         .options(
             selectinload(Order.products_details)
-            .joinedload(OrderProductAssociation.product)  # new
-            .joinedload(Product.racks_products_details)  # new
-            .joinedload(ProductRackAssociation.rack),  # new
+            .joinedload(OrderProductAssociation.product)
+            .joinedload(Product.racks_products_details)
+            .joinedload(ProductRackAssociation.rack)
         )
+        .filter(Order.id.in_(order_ids))
         .order_by(Order.id)
     )
     result = await session.execute(stmt)
     orders = result.scalars().fetchall()
-
-    return list(orders)
+    return orders
 
 
 async def demo_get_orders_with_products_with_assoc(session: AsyncSession):
-    orders = await get_orders_with_products_assoc(session)
+    order_ids = [10, 11, 14, 15]
+    orders = await get_orders_with_products_assoc(session, order_ids)
 
+    racks_dict = {}
+    print("=+=+=+=")
+    print(f"Страница сборки заказов {', '.join(map(str, order_ids))}\n")
     for order in orders:
-        print(order.id, order.title, "products:")
-        for (
-            order_product_detail
-        ) in order.products_details:  # type: OrderProductAssociation
-            racks_titles = [
-                rack_assoc.rack.title
-                for rack_assoc in order_product_detail.product.racks_products_details
-            ]
+
+        for order_product_detail in order.products_details:
+            for rack_assoc in order_product_detail.product.racks_products_details:
+                rack_title = rack_assoc.rack.title
+                if rack_title not in racks_dict:
+                    racks_dict[rack_title] = []
+
+                racks_dict[rack_title].append(order_product_detail)
+
+    for rack_title, order_product_details in racks_dict.items():
+        print(f"===Стеллаж {rack_title}")
+        for order_product_detail in order_product_details:
             print(
-                "-",
-                order_product_detail.product.id,
-                order_product_detail.product.title,
-                "qty:",
-                order_product_detail.count,
-                "racks:",
-                racks_titles,
+                f"{order_product_detail.product.title} (id={order_product_detail.product.id})"
             )
+            print(
+                f"заказ {order_product_detail.order.id}, {order_product_detail.count} шт"
+            )
+            print()
+        print()
 
 
 async def demo_m2m(session: AsyncSession):
