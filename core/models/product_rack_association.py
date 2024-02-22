@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -21,6 +21,7 @@ class ProductRackAssociation(Base):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    is_primary: Mapped[bool] = mapped_column(Boolean, default=False)
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
     rack_id: Mapped[int] = mapped_column(ForeignKey("racks.id"))
 
