@@ -46,9 +46,9 @@ with cte as (
 select cte.order_id,
        cte.product_id,
        p.title as product_title,
-       r.rack_id,
+       r.id,
        r.title as rack_title
 from cte
 inner join products p on cte.product_id = p.id
 inner join product_rack_association pra on p.id = pra.product_id
-inner join racks r on pra.rack_id = r.rack_id;
+inner join racks r on pra.rack_id = r.id;
