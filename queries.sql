@@ -39,12 +39,14 @@ WHERE
 --
 with cte as (
     select opa.order_id,
-           opa.product_id
+           opa.product_id,
+           opa.count as product_count
     from order_product_association opa
     where opa.order_id in (10, 11, 14, 15)
     )
 select cte.order_id,
        cte.product_id,
+       cte.product_count,
        p.title as product_title,
        r.id,
        r.title as rack_title
