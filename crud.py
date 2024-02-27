@@ -42,10 +42,10 @@ def generate_query(order_ids: list[int]) -> str:
     return query
 
 
-def print_orders(reorganized_orders):
+def print_orders(order_ids, reorganized_orders):
     print("=+=+=+=")
     print(
-        f"Страница сборки заказов {', '.join(str(order_id) for order_id in reorganized_orders[0].keys())}\n"
+        f"Страница сборки заказов {', '.join(str(order_id) for order_id in order_ids)}\n"
     )
 
     for item in reorganized_orders:
@@ -118,7 +118,7 @@ async def demo_get_orders_with_products_with_assoc(session: AsyncSession):
     query = generate_query(order_ids)
     orders = await get_orders_with_products_assoc(session, query)
     reorganized_orders = await reorganize_orders(orders)
-    print_orders(reorganized_orders)
+    print_orders(order_ids, reorganized_orders)
 
 
 async def main():
