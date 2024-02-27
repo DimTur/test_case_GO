@@ -10,7 +10,7 @@ async def get_orders_with_products_assoc(session: AsyncSession, query: str):
     stmt = text(query)
     result = await session.execute(stmt)
     orders = result.fetchall()
-    column_names = result.keys()  # Получаем имена столбцов
+    column_names = result.keys()
     orders_list = []
     for order in orders:
         order_dict = dict(zip(column_names, order))
@@ -80,7 +80,6 @@ async def reorganize_orders(orders):
         product_count = order["product_count"]
         is_primary = order["is_primary"]
 
-        # Создаем словарь для хранения информации о товаре
         product_info = {
             "product_id": product_id,
             "product_title": product_title,
@@ -88,9 +87,7 @@ async def reorganize_orders(orders):
             "additional_racks": [],
         }
 
-        # Проверяем, является ли стеллаж основным
         if is_primary:
-            # Поиск или создание элемента для текущего стеллажа
             found = False
             for item in reorganized_orders:
                 if item["rack_title"] == rack_title:
@@ -108,7 +105,6 @@ async def reorganize_orders(orders):
                     {"rack_title": rack_title, order_id: {product_id: product_info}}
                 )
         else:
-            # Добавляем дополнительный стеллаж для продукта
             for item in reorganized_orders:
                 if order_id in item and product_id in item[order_id]:
                     item[order_id][product_id]["additional_racks"].append(rack_title)
