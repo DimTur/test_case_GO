@@ -49,7 +49,8 @@ select cte.order_id,
        cte.product_count,
        p.title as product_title,
        r.id,
-       r.title as rack_title
+       r.title as rack_title,
+       pra.is_primary
 from cte
 inner join products p on cte.product_id = p.id
 inner join product_rack_association pra on p.id = pra.product_id
